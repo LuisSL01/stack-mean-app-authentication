@@ -2,9 +2,10 @@ const express= require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const passport = require('passport-jwt');
+const passport = require('passport');
 const mongoose = require('mongoose');
 const config = require('./config/database');
+const passportConfig = require('./config/passport');
 
 //Conect to Database
 mongoose.connect(config.database);
@@ -20,6 +21,10 @@ mongoose.connection.on('error',(err)=>{
 
 const app = express();
 
+// Initialize Passport
+app.use(passport.initialize());
+// Configure Passport with JWT strategy
+passportConfig(passport);
 
 const users = require('./routes/users');
 

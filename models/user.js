@@ -1,72 +1,53 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const config = require('../config/database');
 
-//create user schema
 const UserSchema = mongoose.Schema({
-    name:{
-        type: String
-    },
-    email:{
+    name: {
         type: String,
-        required: true
     },
-    username:{
+    email: {
         type: String,
-        required: true
+        required: true,
     },
-    password:{
+    username: {
         type: String,
-        required: true
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
     },
 });
 
 const User = module.exports = mongoose.model('User', UserSchema);
 
-module.exports.getUserById = function(id, callback){
-    User.findById(id, callback);
-}
+module.exports.getUserById = function (id) {
+    return User.findById(id);
+};
 
-module.exports.getUserByUsername = function(username, callback){
-    const query = {username:username}
-    User.findOne(query, callback);
-}
-/* 
-module.exports.addUser = function(newUser, callback){    
-    console.log('adding user')
-    console.log(newUser);
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newUser.password, salt, (err, hash) => {  
-            if (err) throw err;
-    
-            newUser.password = hash;
-            newUser.save()
-                .then(savedUser => {
-                    // Handle the saved user or whatever logic you need
-                    console.log(savedUser);
-                })
-                .catch(saveErr => {
-                    // Handle the save error
-                    console.error(saveErr);
-                });
-        });
-    });
-}
+module.exports.getUserByUsername = function (username) {
+    const query = { username: username };
+    return User.findOne(query);
+};
 
-*/
-module.exports.addUser = function(newUser, callback) {    
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) return callback(err, null);
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) return callback(err, null);            
-            newUser.password = hash;
-            newUser.save()
-                .then(savedUser => {                    
-                    callback(null, savedUser);
-                })
-                .catch(saveErr => {
-                    callback(saveErr, null);
-                });
-        });
-    });
+module.exports.addUser = async function (newUser) {
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(newUser.password, salt);
+
+        newUser.password = hash;
+        const savedUser = await newUser.save();
+        return savedUser;
+    } catch (error) {
+        throw error;
+    }
+};
+
+module.exports.comparePassword = async function (candidatePassword, hash) {
+    try {
+        const isMatch = await bcrypt.compare(candidatePassword, hash);
+        return isMatch;
+    } catch (error) {
+        throw error;
+    }
 };

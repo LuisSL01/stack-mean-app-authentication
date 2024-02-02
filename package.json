@@ -8,13 +8,14 @@
     "start": "node app"
   },
   "dependencies": {
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "cors": "*",
     "express": "*",
-    "mongoose":"*",
-    "bcryptjs":"*",
-    "cors":"*",
-    "jsonwebtoken":"*",
-    "body-parser":"*",
-    "passport-jwt":"*"
+    "jsonwebtoken": "*",
+    "mongoose": "*",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
   },
   "author": "mimingo",
   "license": "ISC"
